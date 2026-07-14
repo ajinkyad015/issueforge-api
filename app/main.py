@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 
+from app.api.v1.router import api_router
+
 
 app = FastAPI(
     title="IssueForge API",
@@ -8,6 +10,7 @@ app = FastAPI(
 )
 
 
-@app.get("/")
-async def root() -> dict[str, str]:
-    return {"message": "IssueForge API is running"}
+app.include_router(
+    api_router,
+    prefix="/api/v1",
+)

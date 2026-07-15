@@ -27,6 +27,9 @@ class ProjectRepository(Protocol):
         ...
     async def delete(self, project_id: UUID) -> bool:
         ...
+    async def get_by_slug(self, slug: str) -> ProjectResponse | None:
+        ...
+
 
 class InMemoryProjectRepository:
     def __init__(self) -> None:
@@ -60,5 +63,11 @@ class InMemoryProjectRepository:
 
         del self._projects[project_id]
         return True
+    async def get_by_slug(self, slug: str) -> ProjectResponse | None:
+        for project in self._projects.values():
+            if project.slug == slug:
+                return project
+
+        return None
 
 project_repository = InMemoryProjectRepository()

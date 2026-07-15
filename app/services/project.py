@@ -7,6 +7,7 @@ from app.schemas.project import (
     ProjectResponse,
     ProjectUpdate,
 )
+from app.exceptions.project import ProjectSlugAlreadyExistsError
 
 
 class ProjectService:
@@ -17,6 +18,13 @@ class ProjectService:
         self,
         project_data: ProjectCreate,
     ) -> ProjectResponse:
+        existing_project = await self._repository.get_by_slug(
+            project_data.slug
+        )
+
+        if existing_project is not None:
+            raise ProjectSlugAlreadyExistsError(project_data.slug)
+
         now = datetime.now(timezone.utc)
 
         project = ProjectResponse(

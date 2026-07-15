@@ -10,7 +10,7 @@ from app.schemas.project import (
     ProjectUpdate,
 )
 from app.services.project import ProjectService
-
+from app.exceptions.project import ProjectSlugAlreadyExistsError
 
 router = APIRouter()
 
@@ -30,8 +30,14 @@ async def create_project(
     project_data: ProjectCreate,
     service: ProjectServiceDependency,
 ) -> ProjectResponse:
-    return await service.create_project(project_data)
+    try:
+        return await service.create_project(project_data)
 
+    except ProjectSlugAlreadyExistsError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(exc),
+        ) from exc
 
 @router.get(
     "/projects",

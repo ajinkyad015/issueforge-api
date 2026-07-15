@@ -10,6 +10,7 @@ from app.services.project import ProjectService
 
 router = APIRouter()
 
+
 ProjectServiceDependency = Annotated[
     ProjectService,
     Depends(get_project_service),
@@ -26,6 +27,17 @@ async def create_project(
     service: ProjectServiceDependency,
 ) -> ProjectResponse:
     return await service.create_project(project_data)
+
+
+@router.get(
+    "/projects",
+    response_model=list[ProjectResponse],
+    status_code=status.HTTP_200_OK,
+)
+async def list_projects(
+    service: ProjectServiceDependency,
+) -> list[ProjectResponse]:
+    return await service.list_projects()
 
 
 @router.get(

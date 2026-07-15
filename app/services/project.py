@@ -8,6 +8,7 @@ from app.schemas.project import ProjectCreate, ProjectResponse
 class ProjectService:
     def __init__(self, repository: ProjectRepository) -> None:
         self._repository = repository
+
     async def create_project(
         self,
         project_data: ProjectCreate,
@@ -25,5 +26,11 @@ class ProjectService:
 
         return await self._repository.create(project)
 
-    async def get_project(self, project_id: UUID) -> ProjectResponse | None:
+    async def get_project(
+        self,
+        project_id: UUID,
+    ) -> ProjectResponse | None:
         return await self._repository.get_by_id(project_id)
+
+    async def list_projects(self) -> list[ProjectResponse]:
+        return await self._repository.list_all()

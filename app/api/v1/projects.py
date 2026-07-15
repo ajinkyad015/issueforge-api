@@ -80,10 +80,17 @@ async def update_project(
     project_data: ProjectUpdate,
     service: ProjectServiceDependency,
 ) -> ProjectResponse:
-    project = await service.update_project(
-        project_id=project_id,
-        project_data=project_data,
-    )
+    try:
+        project = await service.update_project(
+            project_id=project_id,
+            project_data=project_data,
+        )
+
+    except ProjectSlugAlreadyExistsError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(exc),
+        ) from exc
 
     if project is None:
         raise HTTPException(

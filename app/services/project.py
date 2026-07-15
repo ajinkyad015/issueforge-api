@@ -1,13 +1,13 @@
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
+from app.exceptions.project import ProjectSlugAlreadyExistsError
 from app.repositories.project import ProjectRepository
 from app.schemas.project import (
     ProjectCreate,
     ProjectResponse,
     ProjectUpdate,
 )
-from app.exceptions.project import ProjectSlugAlreadyExistsError
 
 
 class ProjectService:
@@ -59,6 +59,14 @@ class ProjectService:
 
         update_data = project_data.model_dump(exclude_unset=True)
 
+        new_slug = update_data.get("slug")
+
+        if new_slug is not None and new_slug != existing_project.slug:
+            project_with_slug = await self._repository.get_by_slug(new_slug)
+
+            if project_with_slug is not None:
+                raise ProjectSlugAlreadyExistsError(new_slug)
+
         updated_project = existing_project.model_copy(
             update={
                 **update_data,
@@ -67,6 +75,6 @@ class ProjectService:
         )
 
         return await self._repository.update(updated_project)
- 
+
     async def delete_project(self, project_id: UUID) -> bool:
         return await self._repository.delete(project_id)

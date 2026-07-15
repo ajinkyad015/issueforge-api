@@ -20,6 +20,12 @@ class ProjectRepository(Protocol):
     async def list_all(self) -> list[ProjectResponse]:
         ...
 
+    async def update(
+        self,
+        project: ProjectResponse,
+    ) -> ProjectResponse:
+        ...
+
 
 class InMemoryProjectRepository:
     def __init__(self) -> None:
@@ -40,6 +46,13 @@ class InMemoryProjectRepository:
 
     async def list_all(self) -> list[ProjectResponse]:
         return list(self._projects.values())
+
+    async def update(
+        self,
+        project: ProjectResponse,
+    ) -> ProjectResponse:
+        self._projects[project.id] = project
+        return project
 
 
 project_repository = InMemoryProjectRepository()

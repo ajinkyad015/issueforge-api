@@ -1,13 +1,15 @@
-from datetime import datetime, timezone
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status
 
 from app.repositories.project import project_repository
 from app.schemas.project import ProjectCreate, ProjectResponse
+from app.services.project import ProjectService
 
 
 router = APIRouter()
+
+project_service = ProjectService(project_repository)
 
 
 @router.post(
@@ -16,18 +18,7 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
 )
 async def create_project(project_data: ProjectCreate) -> ProjectResponse:
-    now = datetime.now(timezone.utc)
-
-    project = ProjectResponse(
-        id=uuid4(),
-        name=project_data.name,
-        slug=project_data.slug,
-        description=project_data.description,
-        created_at=now,
-        updated_at=now,
-    )
-
-    return await project_repository.create(project)
+    return await project_service.create_project(project_data)
 
 
 @router.get(
@@ -36,7 +27,7 @@ async def create_project(project_data: ProjectCreate) -> ProjectResponse:
     status_code=status.HTTP_200_OK,
 )
 async def get_project(project_id: UUID) -> ProjectResponse:
-    project = await project_repository.get_by_id(project_id)
+    project = await project_service.get_project(project_id)
 
     if project is None:
         raise HTTPException(

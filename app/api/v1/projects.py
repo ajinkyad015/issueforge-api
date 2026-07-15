@@ -86,3 +86,20 @@ async def update_project(
         )
 
     return project
+
+
+@router.delete(
+    "/projects/{project_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_project(
+    project_id: UUID,
+    service: ProjectServiceDependency,
+) -> None:
+    deleted = await service.delete_project(project_id)
+
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found",
+        )

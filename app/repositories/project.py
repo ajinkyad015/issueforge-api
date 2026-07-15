@@ -25,7 +25,8 @@ class ProjectRepository(Protocol):
         project: ProjectResponse,
     ) -> ProjectResponse:
         ...
-
+    async def delete(self, project_id: UUID) -> bool:
+        ...
 
 class InMemoryProjectRepository:
     def __init__(self) -> None:
@@ -53,6 +54,11 @@ class InMemoryProjectRepository:
     ) -> ProjectResponse:
         self._projects[project.id] = project
         return project
+    async def delete(self, project_id: UUID) -> bool:       
+        if project_id not in self._projects:
+            return False
 
+        del self._projects[project_id]
+        return True
 
 project_repository = InMemoryProjectRepository()

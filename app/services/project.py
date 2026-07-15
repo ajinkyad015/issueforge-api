@@ -59,3 +59,6 @@ class ProjectService:
         )
 
         return await self._repository.update(updated_project)
+ 
+    async def delete_project(self, project_id: UUID) -> bool:
+        return await self._repository.delete(project_id)

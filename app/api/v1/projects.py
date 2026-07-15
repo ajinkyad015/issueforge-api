@@ -1,15 +1,19 @@
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.repositories.project import project_repository
+from app.dependencies.project import get_project_service
 from app.schemas.project import ProjectCreate, ProjectResponse
 from app.services.project import ProjectService
 
 
 router = APIRouter()
 
-project_service = ProjectService(project_repository)
+ProjectServiceDependency = Annotated[
+    ProjectService,
+    Depends(get_project_service),
+]
 
 
 @router.post(
@@ -17,8 +21,11 @@ project_service = ProjectService(project_repository)
     response_model=ProjectResponse,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_project(project_data: ProjectCreate) -> ProjectResponse:
-    return await project_service.create_project(project_data)
+async def create_project(
+    project_data: ProjectCreate,
+    service: ProjectServiceDependency,
+) -> ProjectResponse:
+    return await service.create_project(project_data)
 
 
 @router.get(
@@ -26,8 +33,11 @@ async def create_project(project_data: ProjectCreate) -> ProjectResponse:
     response_model=ProjectResponse,
     status_code=status.HTTP_200_OK,
 )
-async def get_project(project_id: UUID) -> ProjectResponse:
-    project = await project_service.get_project(project_id)
+async def get_project(
+    project_id: UUID,
+    service: ProjectServiceDependency,
+) -> ProjectResponse:
+    project = await service.get_project(project_id)
 
     if project is None:
         raise HTTPException(

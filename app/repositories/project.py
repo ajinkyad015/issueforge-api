@@ -1,6 +1,15 @@
+from typing import Protocol
 from uuid import UUID
 
 from app.schemas.project import ProjectResponse
+
+
+class ProjectRepository(Protocol):
+    async def create(self, project: ProjectResponse) -> ProjectResponse:
+        ...
+
+    async def get_by_id(self, project_id: UUID) -> ProjectResponse | None:
+        ...
 
 
 class InMemoryProjectRepository:

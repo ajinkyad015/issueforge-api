@@ -1,14 +1,13 @@
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
-from app.repositories.project import InMemoryProjectRepository
+from app.repositories.project import ProjectRepository
 from app.schemas.project import ProjectCreate, ProjectResponse
 
 
 class ProjectService:
-    def __init__(self, repository: InMemoryProjectRepository) -> None:
+    def __init__(self, repository: ProjectRepository) -> None:
         self._repository = repository
-
     async def create_project(
         self,
         project_data: ProjectCreate,

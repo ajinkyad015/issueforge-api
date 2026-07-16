@@ -3,10 +3,11 @@ from fastapi import FastAPI
 from app.api.v1.router import api_router
 from app.exception_handlers import register_exception_handlers
 
+from app.core.config import settings
+
 app = FastAPI(
-    title="IssueForge API",
-    description="A production-style issue tracking REST API.",
-    version="0.1.0",
+    title=settings.app_name,
+    version=settings.app_version,
 )
 register_exception_handlers(app)
 

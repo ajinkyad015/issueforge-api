@@ -62,28 +62,39 @@ class ProjectService:
         self,
         project_id: UUID,
     ) -> ProjectResponse | None:
-        return await self._repository.get_by_id(project_id)
+        
+        logger.info("Getting project with id=%s", project_id)
+
+        project = await self._repository.get_by_id(project_id)
+
+        if project is None:
+            logger.warning("Project not found. id=%s", project_id)
+        else:
+            logger.info("Project found. id=%s", project_id)
+
+        return project
+
 
     async def list_projects(self) -> list[ProjectResponse]:
-        return await self._repository.list_all()
+        logger.info("Listing all projects")
+
+        projects = await self._repository.list_all()
+
+        logger.info("Retrieved %d projects", len(projects))
+
+        return projects
 
     async def update_project(
         self,
         project_id: UUID,
         project_data: ProjectUpdate,
     ) -> ProjectResponse | None:
-        logger.info(
-            "Updating project id=%s",
-            project_id,
-        )
+        logger.info("Updating project. id=%s", project_id)
 
         existing_project = await self._repository.get_by_id(project_id)
 
         if existing_project is None:
-            logger.warning(
-                "Project update failed. Project not found id=%s",
-                project_id,
-            )
+            logger.warning("Project update failed. Project not found. id=%s", project_id)
             return None
 
         update_data = project_data.model_dump(exclude_unset=True)
@@ -110,32 +121,23 @@ class ProjectService:
         updated_project = await self._repository.update(updated_project)
 
         logger.info(
-            "Project updated successfully id=%s",
+            "Project updated successfully. id=%s",
             updated_project.id,
         )
 
-        return updated_project
 
-    async def delete_project(
-        self,
-        project_id: UUID,
-    ) -> bool:
-        logger.info(
-            "Deleting project id=%s",
-            project_id,
-        )
+        return updated_project   
+
+    
+
+    async def delete_project(self, project_id: UUID) -> bool:
+        logger.info("Deleting project. id=%s", project_id)
 
         deleted = await self._repository.delete(project_id)
 
         if deleted:
-            logger.info(
-                "Project deleted successfully id=%s",
-                project_id,
-            )
+            logger.info("Project deleted successfully. id=%s", project_id)
         else:
-            logger.warning(
-                "Project deletion failed. Project not found id=%s",
-                project_id,
-            )
+            logger.warning("Project deletion failed. Project not found. id=%s", project_id)
 
         return deleted

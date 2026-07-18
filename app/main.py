@@ -22,6 +22,7 @@ async def lifespan(app: FastAPI):
     app.state.started_at = "Application Started"
 
     logger.info("Application resources initialized.")
+    logger.info("API key loaded: %s", settings.api_key)
 
     yield
 

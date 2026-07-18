@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Security
 
 from app.dependencies.project import get_project_service
 from app.schemas.project import (
@@ -10,8 +10,11 @@ from app.schemas.project import (
     ProjectUpdate,
 )
 from app.services.project import ProjectService
- 
-router = APIRouter()
+from app.security.api_key import require_api_key
+
+router = APIRouter(
+    dependencies=[Security(require_api_key)]
+)
 
 
 ProjectServiceDependency = Annotated[

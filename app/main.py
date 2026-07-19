@@ -8,6 +8,7 @@ from app.core.config import settings
 from app.core.logging import setup_logging
 from app.exception_handlers import register_exception_handlers
 from app.middleware.logging import RequestLoggingMiddleware
+from app.db.session import engine
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,7 @@ async def lifespan(app: FastAPI):
     yield
 
     logger.info("Cleaning up application resources...")
+    await engine.dispose()
 
     del app.state.started_at
 

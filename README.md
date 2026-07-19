@@ -143,7 +143,7 @@ issueforge-api/
 ## Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/issueforge-api.git
+git clone https://github.com/ajinkyad015/issueforge-api.git
 
 cd issueforge-api
 ```

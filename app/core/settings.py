@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     api_key: str
 
     database_url: str
+    database_url_syn : str
 
     model_config = SettingsConfigDict(
         env_file=".env",
